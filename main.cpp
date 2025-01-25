@@ -2,20 +2,20 @@
 #include <iostream>
 #include <string>
 #include <array> 
+#include <stdlib.h>
 
 using namespace std;
 
-void dump(string displayValue){ // dump built-in function displaying values in the console
-    for(char singleSign : displayValue){
-        if(singleSign != '"'){
-            cout << singleSign;
-        }
-    }
-}
+void dump(string);
+void displayError(string);
+
+bool termination = false;
+int iLine = 1;
 
 int main()
 {
-    string keywords[][4] = {{"dump","(","@any",")"}};
+    
+    string keywords[][4] = {{"dump","(","@any",")"},{"error","","",""}};
     
     ifstream file;
     file.open("code.txt"); //opening file
@@ -24,6 +24,7 @@ int main()
     if (file.is_open()) {
         
         while (getline(file, lineOfCode)) {
+            
             int charCount = 0;
             for(char sign : lineOfCode){ //getting length of one line
                 charCount++;
@@ -80,6 +81,7 @@ int main()
                     }
                 }
             }
+            iLine++;
         }
         
         file.close();
@@ -89,4 +91,29 @@ int main()
     }
 
     return 0;
+}
+
+void dump(string displayValue){ // dump built-in function displaying values in the console
+    bool inComma = false; 
+    for(char singleSign : displayValue){
+        if(singleSign == '"'){
+            if(inComma){
+                inComma = false;
+            }else{
+                inComma = true;
+            }
+        }else{
+            if(inComma){
+                cout << singleSign;
+            }else{
+                displayError("Comma error at line ");
+            }
+        }
+    }
+}
+
+void displayError(string text){
+    cout << endl;
+    cout << text << iLine;
+    exit(0);
 }
