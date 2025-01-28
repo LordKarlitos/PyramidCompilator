@@ -15,7 +15,8 @@ int iLine = 1;
 int main()
 {
     
-    string keywords[][4] = {{"dump","(","@any",")"},{"error","","",""}};
+    string keywords[][4] = {{"dump","(","@any",")"},{"dump","(","@any",")"}};
+    int keywordsLenght = end(keywords)-begin(keywords);
     
     ifstream file;
     file.open("code.txt"); //opening file
@@ -47,7 +48,7 @@ int main()
                 text += charList[i];
                 if(foundKeywordID == -1){ //searching for a keyword
                     
-                    for(int j = 0;j < 1;j++){
+                    for(int j = 0;j < keywordsLenght;j++){
                         if(text == keywords[j][0]){
                             foundKeywordID = j;
                             foundKeyword = keywords[j][0];
