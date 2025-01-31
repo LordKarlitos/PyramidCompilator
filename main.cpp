@@ -5,8 +5,8 @@
 #include <stdlib.h>
 
 using namespace std;
-
-void dump(string);
+//functions!!!
+void dump(string, string);
 void displayError(string);
 
 bool termination = false;
@@ -15,7 +15,7 @@ int iLine = 1;
 int main()
 {
     
-    string keywords[][4] = {{"dump","(","@any",")"},{"dump","(","@any",")"}};
+    string keywords[][4] = {{"dump","(","@any",")"}};
     int keywordsLenght = end(keywords)-begin(keywords);
     
     ifstream file;
@@ -47,7 +47,6 @@ int main()
             for(int i = 0; i < charCount;i++){ 
                 text += charList[i];
                 if(foundKeywordID == -1){ //searching for a keyword
-                    
                     for(int j = 0;j < keywordsLenght;j++){
                         if(text == keywords[j][0]){
                             foundKeywordID = j;
@@ -75,11 +74,18 @@ int main()
                     if(charList[i] == ';'){ //end of line. 
                         switch(foundKeywordID){ //time to execute found keywords
                             case 0:
-                            dump(operand);
+                            if(operand == "true" || operand == "false"){
+                                dump(operand, "bool");
+                            }else{
+                                dump(operand, "string");
+                            }
                             break;
                         }
                         break;
                     }
+                }
+                if(i+2 == charCount && charList[i] != ';'){
+                    displayError("Missing semicolon error");
                 }
             }
             iLine++;
@@ -94,27 +100,42 @@ int main()
     return 0;
 }
 
-void dump(string displayValue){ // dump built-in function displaying values in the console
-    bool inComma = false; 
-    for(char singleSign : displayValue){
-        if(singleSign == '"'){
-            if(inComma){
-                inComma = false;
+void dump(string displayValue, string type){ // dump built-in function displaying values in the console
+    if(type == "string"){
+        bool inComma = false; 
+        int charCount = 0;
+        for(char singleSign : displayValue){
+            charCount++;
+        }
+        int temp = 0;
+        for(char singleSign : displayValue){
+            temp++;
+            if(singleSign == '"'){
+                if(inComma){
+                    inComma = false;
+                }else{
+                    inComma = true;
+                }
             }else{
-                inComma = true;
+                if(inComma){
+                    cout << singleSign;
+                }else{
+                    displayError("Comma error");
+                }
             }
-        }else{
-            if(inComma){
-                cout << singleSign;
-            }else{
-                displayError("Comma error at line ");
+            if(temp == charCount && singleSign != '"'){
+                displayError("Comma error");
             }
+        }
+    }else if(type == "bool"){
+        for(char singleSign : displayValue){
+            cout << singleSign;
         }
     }
 }
 
 void displayError(string text){
     cout << endl;
-    cout << text << iLine;
+    cout << text << " at line "<< iLine;
     exit(0);
 }
